@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>ポーズ表</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700;900&display=swap">
+<style>
+body{margin:0;font-family:"Zen Maru Gothic","Hiragino Maru Gothic ProN",sans-serif;background:#fbf3e4;color:#4a3b2f}
+a{color:#c9672a}a:hover{color:#a34f1a}
+</style>
+</helmet>
+<div style="width: 1280px; height: 640px; box-sizing: border-box; padding: 28px 32px; background: #fbf3e4; color: #4a3b2f; display: flex; flex-direction: column; gap: 16px;">
+  <div style="display: flex; align-items: baseline; gap: 14px;">
+    <div style="font-size: 24px; font-weight: 900; color: #7a4a1e;">はむポーズ表</div>
+    <div style="font-size: 13px; color: #8a6a4a;">同じパーツ設計で「種類 × ポーズ × 左右反転」を組み合わせる。行＝種類、列＝ポーズ</div>
+  </div>
+  <div style="display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 8px;">
+    <div></div>
+    <sc-for list="{{poseNames}}" as="p" hint-placeholder-count="6">
+      <div style="text-align: center; font-size: 13px; font-weight: 700; color: #8a6a4a; background: #f3d9a4; border-radius: 10px; padding: 6px 0;">{{p}}</div>
+    </sc-for>
+    <sc-for list="{{rows}}" as="row" hint-placeholder-count="4">
+      <div style="display: flex; align-items: center; font-size: 13px; font-weight: 700; color: #7a4a1e;">{{row.name}}</div>
+      <sc-for list="{{row.cells}}" as="cell" hint-placeholder-count="6">
+        <div style="display: flex; align-items: center; justify-content: center; height: 112px; background: #fff8ea; border: 2px solid #e6cfa3; border-radius: 14px;">
+          <dc-import name="Hamster" item="{{cell}}" size="{{cell.size}}" hint-size="96px,96px"></dc-import>
+        </div>
+      </sc-for>
+    </sc-for>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":640}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const poses = ['front', 'side', 'back', 'sleep', 'eat', 'belly'];
+    const poseNames = ['おすわり', 'あるく', 'うしろすがた', 'ねる', 'たべる', 'ごろん'];
+    const species = [
+      ['ゴールデン', { body: '#e0a565', belly: '#fff5e6' }],
+      ['ジャンガリアン', { body: '#9a8f82', belly: '#f7f3ec', stripe: '#4a423c' }],
+      ['ロボロフスキー', { body: '#c9a26a', belly: '#fff8ea', brow: '#ffffff' }],
+      ['ブルーキャンベル', { body: '#8f97a8', belly: '#eef0f4', stripe: '#5a6372' }]
+    ];
+    const rows = species.map(([name, colors], r) => ({
+      name,
+      cells: poses.map((pose, i) => ({ pose, colors, size: 96, flip: (r + i) % 2 === 1 }))
+    }));
+    return { poseNames, rows };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>はむ図鑑</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700;900&display=swap">
+<style>
+body{margin:0;font-family:"Zen Maru Gothic","Hiragino Maru Gothic ProN",sans-serif;background:#fbf3e4;color:#4a3b2f}
+a{color:#c9672a}a:hover{color:#a34f1a}
+</style>
+</helmet>
+<div style="width: 1280px; height: 800px; box-sizing: border-box; display: flex; flex-direction: column; background: #fbf3e4; color: #4a3b2f; overflow: hidden;">
+
+  <!-- ヘッダー -->
+  <div style="height: 64px; box-sizing: border-box; padding: 0 24px; display: flex; align-items: center; gap: 16px; background: #f3d9a4; border-bottom: 4px solid #d9a35a;">
+    <a href="Main.dc.html" aria-label="おへやへもどる" style="display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 999px; background: #fff8ea; border: 2px solid #d9a35a;">
+      <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="#7a4a1e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5 L8 12 L15 19"></path></svg>
+    </a>
+    <div style="font-size: 26px; font-weight: 900; color: #7a4a1e;">はむ図鑑</div>
+    <div style="flex-grow: 1;"></div>
+    <div style="display: flex; align-items: center; gap: 12px;">
+      <div style="font-size: 14px; font-weight: 700; color: #8a6a4a;">あつめた はむ</div>
+      <div style="font-size: 22px; font-weight: 900; color: #c9672a;">12 <span style="font-size: 14px; color: #8a6a4a;">/ 24</span></div>
+      <div style="width: 200px; height: 14px; background: #ecd9b3; border-radius: 999px; overflow: hidden;"><div style="width: 50%; height: 14px; background: #e0803f;"></div></div>
+    </div>
+  </div>
+
+  <!-- タブ -->
+  <div style="display: flex; gap: 8px; padding: 16px 24px 0 24px;">
+    <button type="button" style="font-family: inherit; font-size: 14px; font-weight: 700; padding: 10px 20px; border-radius: 999px; border: 2px solid #c9672a; background: #e0803f; color: #ffffff; cursor: pointer;">すべて</button>
+    <button type="button" style="font-family: inherit; font-size: 14px; font-weight: 700; padding: 10px 20px; border-radius: 999px; border: 2px solid #d9a35a; background: #fff8ea; color: #7a4a1e; cursor: pointer;">ゴールデン</button>
+    <button type="button" style="font-family: inherit; font-size: 14px; font-weight: 700; padding: 10px 20px; border-radius: 999px; border: 2px solid #d9a35a; background: #fff8ea; color: #7a4a1e; cursor: pointer;">ジャンガリアン</button>
+    <button type="button" style="font-family: inherit; font-size: 14px; font-weight: 700; padding: 10px 20px; border-radius: 999px; border: 2px solid #d9a35a; background: #fff8ea; color: #7a4a1e; cursor: pointer;">ロボロフスキー</button>
+    <button type="button" style="font-family: inherit; font-size: 14px; font-weight: 700; padding: 10px 20px; border-radius: 999px; border: 2px solid #d9a35a; background: #fff8ea; color: #7a4a1e; cursor: pointer;">キャンベル</button>
+    <button type="button" style="font-family: inherit; font-size: 14px; font-weight: 700; padding: 10px 20px; border-radius: 999px; border: 2px solid #d9a35a; background: #fff8ea; color: #7a4a1e; cursor: pointer;">そのほか</button>
+    <button type="button" style="font-family: inherit; font-size: 14px; font-weight: 700; padding: 10px 20px; border-radius: 999px; border: 2px solid #d9a35a; background: #fff8ea; color: #7a4a1e; cursor: pointer;">レアはむ</button>
+  </div>
+
+  <!-- グリッド -->
+  <div style="flex-grow: 1; padding: 16px 24px 24px 24px; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 14px; align-content: start;">
+    <sc-for list="{{cards}}" as="item" hint-placeholder-count="24">
+      <div style="position: relative; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 10px 8px; background: {{item.bg}}; border: 3px solid {{item.border}}; border-radius: 18px; box-sizing: border-box;">
+        <div style="position: absolute; left: 10px; top: 8px; font-size: 11px; font-weight: 700; color: #a5804f;">No.{{item.no}}</div>
+        <sc-if value="{{item.rare}}" hint-placeholder-val="{{false}}">
+          <div style="position: absolute; right: 8px; top: 6px; font-size: 11px; font-weight: 900; color: #ffffff; background: #d9534f; border-radius: 999px; padding: 2px 8px;">レア</div>
+        </sc-if>
+        <div style="position: relative; width: 92px; height: 92px; margin-top: 10px;">
+          <dc-import name="Hamster" item="{{item}}" size="{{item.size}}" hint-size="92px,92px"></dc-import>
+          <sc-if value="{{item.unknown}}" hint-placeholder-val="{{false}}">
+            <div style="position: absolute; left: 0; top: 0; width: 92px; height: 92px; display: flex; align-items: center; justify-content: center; font-size: 34px; font-weight: 900; color: #ffffff;">?</div>
+          </sc-if>
+        </div>
+        <div style="font-size: 14px; font-weight: 900; color: {{item.text}};">{{item.name}}</div>
+        <div style="font-size: 11px; color: #a5804f;">{{item.kind}}</div>
+        <div style="font-size: 11px; font-weight: 700; color: {{item.text}};">{{item.visits}}</div>
+      </div>
+    </sc-for>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":800}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const list = [
+      ['ゴールデン', 'ゴールデン', '#e0a565', '#fff5e6', {}, 23],
+      ['キンクマ', 'ゴールデン', '#f0c98a', '#fff8ea', {}, 9],
+      ['ブラックゴールデン', 'ゴールデン', '#3b3230', '#6b5a52', { ear: '#8a7570' }, 0],
+      ['長毛ゴールデン', 'ゴールデン', '#c98a5a', '#f5e2c8', {}, 0],
+      ['ダルメシアンゴールデン', 'ゴールデン', '#f5f0e6', '#ffffff', { stripe: '#3b3230' }, 0],
+      ['ジャンガリアン', 'ジャンガリアン', '#9a8f82', '#f7f3ec', { stripe: '#4a423c' }, 31],
+      ['プディングジャンガリアン', 'ジャンガリアン', '#e8c27a', '#fff8ea', { stripe: '#c49a4c' }, 14],
+      ['サファイアジャンガリアン', 'ジャンガリアン', '#a9adb8', '#f7f7f7', { stripe: '#6b7280', ear: '#d8d5dc' }, 6],
+      ['パールジャンガリアン', 'ジャンガリアン', '#f4f1ec', '#ffffff', { stripe: '#d9d3ca' }, 2],
+      ['スノーホワイトジャンガリアン', 'ジャンガリアン', '#ffffff', '#ffffff', { ear: '#f3d9d9' }, 0],
+      ['ロボロフスキー', 'ロボロフスキー', '#c9a26a', '#fff8ea', { brow: '#ffffff' }, 17],
+      ['ホワイトフェイスロボ', 'ロボロフスキー', '#e6d6b4', '#ffffff', { brow: '#ffffff' }, 4],
+      ['パイドロボ', 'ロボロフスキー', '#d8c39a', '#ffffff', { brow: '#ffffff', stripe: '#ffffff' }, 0],
+      ['キャンベル', 'キャンベル', '#a0866a', '#f7f3ec', { stripe: '#5c4a3a' }, 11],
+      ['ブラックキャンベル', 'キャンベル', '#2f2a28', '#5a4f4a', { ear: '#8a7570' }, 0],
+      ['ブルーキャンベル', 'キャンベル', '#8f97a8', '#eef0f4', { stripe: '#5a6372' }, 3],
+      ['アルビノキャンベル', 'キャンベル', '#ffffff', '#ffffff', { eye: '#d64545', ear: '#f6c9b3' }, 0],
+      ['チャイニーズ', 'チャイニーズ', '#8a7460', '#f3ede4', { stripe: '#4a3a2e' }, 5],
+      ['スポットチャイニーズ', 'チャイニーズ', '#f0e8dc', '#ffffff', { stripe: '#8a7460' }, 0],
+      ['クロハラハムスター', 'ヨーロッパ', '#b8783e', '#2a2220', { ear: '#e8a37a' }, 1],
+      ['ひまわり仙人', 'レアはむ', '#f2c14e', '#fff8ea', {}, 1, true],
+      ['ゆきだるはむ', 'レアはむ', '#ffffff', '#ffffff', { ear: '#bfe3f2' }, 0, true],
+      ['はむ王子', 'レアはむ', '#e0a565', '#fff5e6', {}, 0, true],
+      ['ねずみ小僧', 'レアはむ', '#6b6b6b', '#9a9a9a', { stripe: '#2b2320' }, 0, true]
+    ];
+    const poses = ['front', 'side', 'eat', 'sleep', 'back', 'belly'];
+    const cards = list.map((r, i) => {
+      const [name, kind, body, belly, opts, visits, rare] = r;
+      const known = visits > 0;
+      const colors = Object.assign({ body, belly }, opts);
+      if (!known) {
+        for (const k of Object.keys(colors)) colors[k] = colors[k] === 'none' ? 'none' : '#cdc3b5';
+        Object.assign(colors, { body: '#cdc3b5', belly: '#cdc3b5', ear: '#cdc3b5', eye: '#cdc3b5', nose: '#cdc3b5', line: '#b5a994' });
+      }
+      return {
+        no: String(i + 1).padStart(2, '0'), name: known ? name : '？？？', kind, rare: !!rare, unknown: !known,
+        pose: poses[i % poses.length], flip: i % 4 === 1, size: 92, colors,
+        bg: known ? '#fff8ea' : '#f3ecdd', border: known ? (rare ? '#e0803f' : '#e6cfa3') : '#e6dcc6',
+        text: known ? '#4a3b2f' : '#a5804f',
+        visits: known ? ('きた回数 ' + visits) : 'まだ会っていない'
+      };
+    });
+    return { cards };
+  }
+}
+</script>
+</body>
+</html>

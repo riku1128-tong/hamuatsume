@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<title>はむあつめ おへや</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@500;700;900&display=swap">
+<style>
+body{margin:0;font-family:"Zen Maru Gothic","Hiragino Maru Gothic ProN",sans-serif;background:#fbf3e4;color:#4a3b2f}
+a{color:#c9672a}a:hover{color:#a34f1a}
+</style>
+</helmet>
+<div style="width: 1280px; height: 800px; box-sizing: border-box; display: flex; flex-direction: column; background: #fbf3e4; color: #4a3b2f; position: relative; overflow: hidden;">
+
+  <!-- ヘッダー -->
+  <div style="height: 64px; box-sizing: border-box; padding: 0 24px; display: flex; align-items: center; gap: 20px; background: #f3d9a4; border-bottom: 4px solid #d9a35a;">
+    <div style="display: flex; align-items: center; gap: 10px;">
+      <svg viewBox="0 0 100 100" width="40" height="40" style="overflow: visible;">
+        <circle cx="24" cy="34" r="11" fill="#e0a565"></circle><circle cx="76" cy="34" r="11" fill="#e0a565"></circle>
+        <circle cx="24" cy="34" r="6" fill="#f6c9b3"></circle><circle cx="76" cy="34" r="6" fill="#f6c9b3"></circle>
+        <ellipse cx="50" cy="60" rx="40" ry="34" fill="#e0a565"></ellipse>
+        <ellipse cx="50" cy="76" rx="24" ry="16" fill="#fff5e6"></ellipse>
+        <circle cx="37" cy="54" r="4.2" fill="#2b2320"></circle><circle cx="63" cy="54" r="4.2" fill="#2b2320"></circle>
+        <ellipse cx="50" cy="63" rx="3.2" ry="2.4" fill="#e39a9a"></ellipse>
+      </svg>
+      <div style="font-size: 28px; font-weight: 900; color: #7a4a1e; letter-spacing: 2px;">はむあつめ</div>
+    </div>
+    <div style="flex-grow: 1;"></div>
+    <div style="display: flex; align-items: center; gap: 8px; background: #fff8ea; border: 2px solid #d9a35a; border-radius: 999px; padding: 6px 16px 6px 10px;">
+      <svg viewBox="0 0 24 24" width="22" height="22"><path d="M12 2 C16 6 17 12 12 22 C7 12 8 6 12 2Z" fill="#6b4a2a" stroke="#3d2914" stroke-width="1.2"></path><path d="M12 5 L12 19" stroke="#c9a47a" stroke-width="1"></path></svg>
+      <div style="font-size: 18px; font-weight: 700;">1,240</div>
+      <div style="font-size: 12px; color: #8a6a4a;">ひまわりの種</div>
+    </div>
+    <div style="display: flex; align-items: center; gap: 8px; background: #fff8ea; border: 2px solid #d9a35a; border-radius: 999px; padding: 6px 16px 6px 10px;">
+      <svg viewBox="0 0 24 24" width="22" height="22"><path d="M12 2 C16 6 17 12 12 22 C7 12 8 6 12 2Z" fill="#f2c14e" stroke="#b8860b" stroke-width="1.2"></path></svg>
+      <div style="font-size: 18px; font-weight: 700;">12</div>
+      <div style="font-size: 12px; color: #8a6a4a;">金の種</div>
+    </div>
+  </div>
+
+  <!-- おへや（ケージ） -->
+  <div style="flex-grow: 1; position: relative; background: #f6e7c8; overflow: hidden;">
+    <!-- 壁 -->
+    <div style="position: absolute; left: 0; top: 0; width: 1280px; height: 210px; background: #fdf6e9; border-bottom: 6px solid #d9b98a;"></div>
+    <!-- 窓 -->
+    <div style="position: absolute; left: 80px; top: 24px; width: 220px; height: 150px; background: #bfe3f2; border: 10px solid #e2c48f; border-radius: 12px; box-sizing: border-box; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0;">
+      <div style="border-right: 5px solid #e2c48f; border-bottom: 5px solid #e2c48f;"></div><div style="border-bottom: 5px solid #e2c48f;"></div><div style="border-right: 5px solid #e2c48f;"></div><div></div>
+    </div>
+    <!-- 壁のポスター -->
+    <div style="position: absolute; left: 980px; top: 30px; width: 190px; height: 140px; background: #fff; border: 6px solid #c98a5a; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;">
+      <svg viewBox="0 0 60 60" width="70" height="70"><circle cx="30" cy="30" r="12" fill="#6b4a2a"></circle><g fill="#f2c14e" stroke="#d9a012" stroke-width="1"><ellipse cx="30" cy="8" rx="5" ry="10"></ellipse><ellipse cx="30" cy="52" rx="5" ry="10"></ellipse><ellipse cx="8" cy="30" rx="10" ry="5"></ellipse><ellipse cx="52" cy="30" rx="10" ry="5"></ellipse><ellipse cx="14" cy="14" rx="9" ry="5" transform="rotate(-45 14 14)"></ellipse><ellipse cx="46" cy="46" rx="9" ry="5" transform="rotate(-45 46 46)"></ellipse><ellipse cx="46" cy="14" rx="9" ry="5" transform="rotate(45 46 14)"></ellipse><ellipse cx="14" cy="46" rx="9" ry="5" transform="rotate(45 14 46)"></ellipse></g></svg>
+      <div style="font-size: 13px; font-weight: 700; color: #8a6a4a;">ひまわり畑へ行こう</div>
+    </div>
+
+    <!-- 床チップ模様 -->
+    <div style="position: absolute; left: 0; top: 210px; width: 1280px; height: 440px; background: #f6e7c8;"></div>
+    <svg viewBox="0 0 1280 440" width="1280" height="440" style="position: absolute; left: 0; top: 210px;" aria-hidden="true">
+      <g fill="#ecd9b3"><ellipse cx="120" cy="60" rx="22" ry="9"></ellipse><ellipse cx="420" cy="120" rx="26" ry="10"></ellipse><ellipse cx="760" cy="40" rx="20" ry="8"></ellipse><ellipse cx="1120" cy="90" rx="24" ry="9"></ellipse><ellipse cx="240" cy="330" rx="26" ry="10"></ellipse><ellipse cx="560" cy="380" rx="22" ry="9"></ellipse><ellipse cx="900" cy="300" rx="28" ry="10"></ellipse><ellipse cx="1180" cy="400" rx="22" ry="9"></ellipse><ellipse cx="660" cy="240" rx="20" ry="8"></ellipse><ellipse cx="60" cy="220" rx="18" ry="8"></ellipse></g>
+    </svg>
+
+    <!-- 回し車 -->
+    <svg viewBox="0 0 200 200" width="200" height="200" style="position: absolute; left: 90px; top: 190px;">
+      <ellipse cx="100" cy="185" rx="80" ry="10" fill="#d8c39a" opacity="0.6"></ellipse>
+      <path d="M40 185 L100 105 L160 185" stroke="#8fb7c9" stroke-width="12" fill="none" stroke-linecap="round"></path>
+      <circle cx="100" cy="100" r="82" fill="#e9f3f7" stroke="#7fb0c9" stroke-width="12"></circle>
+      <g stroke="#a9cfe0" stroke-width="6"><line x1="100" y1="18" x2="100" y2="182"></line><line x1="18" y1="100" x2="182" y2="100"></line><line x1="42" y1="42" x2="158" y2="158"></line><line x1="158" y1="42" x2="42" y2="158"></line></g>
+      <circle cx="100" cy="100" r="14" fill="#7fb0c9"></circle>
+    </svg>
+
+    <!-- 巣箱 -->
+    <svg viewBox="0 0 220 180" width="220" height="180" style="position: absolute; left: 980px; top: 210px;">
+      <ellipse cx="110" cy="170" rx="100" ry="10" fill="#d8c39a" opacity="0.6"></ellipse>
+      <path d="M20 90 L110 20 L200 90 Z" fill="#d98b6a" stroke="#a65b3d" stroke-width="6" stroke-linejoin="round"></path>
+      <rect x="35" y="88" width="150" height="80" fill="#f0c58f" stroke="#a65b3d" stroke-width="6"></rect>
+      <ellipse cx="110" cy="132" rx="28" ry="32" fill="#4a3324"></ellipse>
+      <rect x="45" y="100" width="20" height="4" fill="#d9a35a"></rect><rect x="45" y="112" width="30" height="4" fill="#d9a35a"></rect>
+    </svg>
+
+    <!-- トンネル -->
+    <svg viewBox="0 0 260 120" width="260" height="120" style="position: absolute; left: 640px; top: 250px;">
+      <ellipse cx="130" cy="110" rx="120" ry="10" fill="#d8c39a" opacity="0.6"></ellipse>
+      <path d="M20 100 L20 60 A110 60 0 0 1 240 60 L240 100" fill="#b6d788" stroke="#6f9a47" stroke-width="8" stroke-linejoin="round"></path>
+      <ellipse cx="20" cy="82" rx="18" ry="24" fill="#3f5a2a" stroke="#6f9a47" stroke-width="6"></ellipse>
+      <ellipse cx="240" cy="82" rx="18" ry="24" fill="#3f5a2a" stroke="#6f9a47" stroke-width="6"></ellipse>
+      <g stroke="#8fbf62" stroke-width="5" fill="none"><path d="M70 100 A80 70 0 0 1 80 28"></path><path d="M130 100 L130 10"></path><path d="M190 100 A80 70 0 0 0 180 28"></path></g>
+    </svg>
+
+    <!-- 砂場 -->
+    <svg viewBox="0 0 220 120" width="220" height="120" style="position: absolute; left: 380px; top: 470px;">
+      <path d="M10 60 Q10 30 40 30 L180 30 Q210 30 210 60 L210 95 Q210 110 195 110 L25 110 Q10 110 10 95 Z" fill="#f2e2c4" stroke="#c9a06a" stroke-width="6"></path>
+      <ellipse cx="110" cy="70" rx="80" ry="24" fill="#e8d3a6"></ellipse>
+      <g fill="#d9bf8c"><circle cx="60" cy="72" r="4"></circle><circle cx="150" cy="64" r="4"></circle><circle cx="120" cy="82" r="3"></circle></g>
+    </svg>
+
+    <!-- えさ皿 -->
+    <svg viewBox="0 0 200 110" width="200" height="110" style="position: absolute; left: 720px; top: 470px;">
+      <ellipse cx="100" cy="96" rx="90" ry="10" fill="#d8c39a" opacity="0.6"></ellipse>
+      <path d="M15 50 Q15 100 100 100 Q185 100 185 50 Z" fill="#e8825a" stroke="#b34f2b" stroke-width="6"></path>
+      <ellipse cx="100" cy="50" rx="85" ry="22" fill="#f6a785" stroke="#b34f2b" stroke-width="6"></ellipse>
+      <g fill="#6b4a2a" stroke="#3d2914" stroke-width="1"><ellipse cx="70" cy="48" rx="5" ry="10" transform="rotate(-30 70 48)"></ellipse><ellipse cx="100" cy="44" rx="5" ry="10" transform="rotate(10 100 44)"></ellipse><ellipse cx="128" cy="50" rx="5" ry="10" transform="rotate(40 128 50)"></ellipse><ellipse cx="86" cy="58" rx="5" ry="10" transform="rotate(70 86 58)"></ellipse><ellipse cx="116" cy="60" rx="5" ry="10" transform="rotate(-60 116 60)"></ellipse></g>
+    </svg>
+
+    <!-- 空きスロット -->
+    <div style="position: absolute; left: 1020px; top: 470px; width: 180px; height: 120px; border: 4px dashed #c9a06a; border-radius: 20px; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; color: #a5804f;">
+      <svg viewBox="0 0 24 24" width="30" height="30"><path d="M12 5 L12 19 M5 12 L19 12" stroke="#a5804f" stroke-width="3" stroke-linecap="round"></path></svg>
+      <div style="font-size: 14px; font-weight: 700;">グッズをおく</div>
+    </div>
+
+    <!-- ハムスターたち -->
+    <sc-for list="{{hamsters}}" as="item" hint-placeholder-count="6">
+      <div style="position: absolute; left: {{item.x}}px; top: {{item.y}}px; display: flex; flex-direction: column; align-items: center; gap: 2px;">
+        <dc-import name="Hamster" item="{{item}}" size="{{item.size}}" hint-size="100px,100px"></dc-import>
+        <div style="font-size: 12px; font-weight: 700; background: rgba(255,255,255,0.85); border-radius: 999px; padding: 2px 10px; color: #6b4a2a; white-space: nowrap;">{{item.name}}</div>
+      </div>
+    </sc-for>
+
+    <!-- 来訪トースト -->
+    <div style="position: absolute; left: 400px; top: 16px; display: flex; align-items: center; gap: 12px; background: #ffffff; border: 3px solid #e0803f; border-radius: 16px; padding: 10px 18px; box-shadow: 0 4px 0 #d9a35a;">
+      <svg viewBox="0 0 24 24" width="24" height="24"><path d="M12 3 L14.5 9 L21 9.5 L16 13.5 L17.5 20 L12 16.5 L6.5 20 L8 13.5 L3 9.5 L9.5 9 Z" fill="#f2c14e" stroke="#b8860b" stroke-width="1.2" stroke-linejoin="round"></path></svg>
+      <div style="font-size: 15px; font-weight: 700;">ジャンガリアン（プディング）の「プリン」が あそびにきました！</div>
+    </div>
+
+    <!-- えさゲージ -->
+    <div style="position: absolute; left: 24px; top: 560px; width: 300px; background: #fff8ea; border: 3px solid #d9a35a; border-radius: 16px; padding: 12px 16px; box-sizing: border-box; display: flex; flex-direction: column; gap: 8px;">
+      <div style="display: flex; justify-content: space-between; font-size: 13px; font-weight: 700; color: #8a6a4a;"><span>えさ：ひまわりの種（ふつう）</span><span>のこり 68%</span></div>
+      <div style="height: 14px; background: #ecd9b3; border-radius: 999px; overflow: hidden;"><div style="width: 68%; height: 14px; background: #e0803f; border-radius: 999px;"></div></div>
+      <div style="font-size: 12px; color: #a5804f;">なくなるまで あと 2時間14分</div>
+    </div>
+  </div>
+
+  <!-- ボトムナビ -->
+  <div style="height: 88px; box-sizing: border-box; background: #f3d9a4; border-top: 4px solid #d9a35a; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 0; padding: 8px 40px;">
+    <a href="Main.dc.html" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; text-decoration: none; color: #7a4a1e; background: #fff8ea; border-radius: 16px; margin: 0 8px;">
+      <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#7a4a1e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11 L12 4 L21 11"></path><path d="M5 10 V20 H19 V10"></path><rect x="10" y="14" width="4" height="6"></rect></svg>
+      <span style="font-size: 13px; font-weight: 700;">おへや</span>
+    </a>
+    <a href="Zukan.dc.html" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; text-decoration: none; color: #7a4a1e; margin: 0 8px;">
+      <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#7a4a1e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4 H11 V20 H4 Z"></path><path d="M13 4 H20 V20 H13 Z"></path><path d="M6 8 H9 M6 11 H9 M15 8 H18 M15 11 H18"></path></svg>
+      <span style="font-size: 13px; font-weight: 700;">はむ図鑑</span>
+    </a>
+    <a href="Main.dc.html" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; text-decoration: none; color: #7a4a1e; margin: 0 8px;">
+      <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#7a4a1e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8 H20 L18 20 H6 Z"></path><path d="M9 8 V6 A3 3 0 0 1 15 6 V8"></path></svg>
+      <span style="font-size: 13px; font-weight: 700;">ショップ</span>
+    </a>
+    <a href="Main.dc.html" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; text-decoration: none; color: #7a4a1e; margin: 0 8px;">
+      <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#7a4a1e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12 Q4 19 12 19 Q20 19 20 12 Z"></path><ellipse cx="12" cy="12" rx="8" ry="2.5"></ellipse><path d="M9 10 L11 7 M13 7 L15 10"></path></svg>
+      <span style="font-size: 13px; font-weight: 700;">えさ</span>
+    </a>
+    <a href="Main.dc.html" style="display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; text-decoration: none; color: #7a4a1e; margin: 0 8px;">
+      <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="#7a4a1e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M12 2 V5 M12 19 V22 M2 12 H5 M19 12 H22 M4.9 4.9 L7 7 M17 17 L19.1 19.1 M4.9 19.1 L7 17 M17 7 L19.1 4.9"></path></svg>
+      <span style="font-size: 13px; font-weight: 700;">せってい</span>
+    </a>
+  </div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1280,"height":800}}'>
+class Component extends DCLogic {
+  renderVals() {
+    const H = (name, pose, x, y, size, colors, flip) => ({ name, pose, x, y, size, colors, flip: !!flip });
+    return {
+      hamsters: [
+        H('ゴールデン', 'side', 130, 230, 120, { body: '#e0a565', belly: '#fff5e6' }, true),
+        H('ジャンガリアン（プディング）', 'front', 440, 440, 90, { body: '#e8c27a', belly: '#fff8ea', stripe: '#c49a4c' }),
+        H('ロボロフスキー', 'back', 560, 300, 70, { body: '#c9a26a', belly: '#fff8ea', brow: '#ffffff' }),
+        H('ジャンガリアン（サファイアブルー）', 'sleep', 880, 300, 90, { body: '#a9adb8', belly: '#f7f7f7', stripe: '#6b7280', ear: '#d8d5dc' }),
+        H('キャンベル', 'eat', 780, 400, 90, { body: '#a0866a', belly: '#f7f3ec', stripe: '#5c4a3a' }),
+        H('ゴールデン（キンクマ）', 'belly', 220, 560, 110, { body: '#f0c98a', belly: '#fff8ea' })
+      ]
+    };
+  }
+}
+</script>
+</body>
+</html>
