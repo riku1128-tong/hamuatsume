@@ -59,7 +59,7 @@ input, textarea { font-family: inherit; }
 .slot-empty { border: 4px dashed rgba(255,255,255,.75); border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; color: #fff; text-shadow: 0 1px 0 rgba(0,0,0,.45); font-size: 15px; font-weight: 700; background: rgba(0,0,0,.14); cursor: pointer; }
 .slot-empty:hover { background: rgba(255,255,255,.28); }
 .slot-item { position: relative; width: 100%; height: 100%; }
-.slot-item > .item-art { position: absolute; left: 0; bottom: 0; width: 100%; height: 100%; cursor: pointer; }
+.slot-item > .item-art { position: absolute; left: 50%; bottom: 0; transform: translateX(-50%); cursor: pointer; }
 .slot-item .item-label { display: none; position: absolute; left: 50%; bottom: -4px; transform: translateX(-50%); font-size: 12px; font-weight: 700; color: var(--text-2); background: rgba(255,255,255,.8); border-radius: 999px; padding: 1px 10px; white-space: nowrap; pointer-events: none; }
 .visitor { position: absolute; display: flex; flex-direction: column; align-items: center; cursor: pointer; transform: translate(-50%, -100%); transition: transform .2s; }
 .visitor:hover { transform: translate(-50%, -100%) scale(1.06); }
@@ -67,8 +67,8 @@ input, textarea { font-family: inherit; }
 .visitor.new .name::before { content: "NEW "; color: var(--red); }
 .bowl-slot { position: absolute; display: flex; align-items: flex-end; justify-content: center; }
 .bowl-slot .item-art { width: 100%; height: 100%; cursor: pointer; }
-.hud { position: absolute; left: 340px; top: 22px; width: 300px; background: var(--card); border: 3px solid var(--line); border-radius: 16px; padding: 10px 14px; display: flex; flex-direction: column; gap: 6px; }
-.hud .row { display: flex; justify-content: space-between; font-size: 13px; font-weight: 700; color: var(--text-2); }
+.hud { position: absolute; left: 340px; top: 18px; width: 380px; background: var(--card); border: 3px solid var(--line); border-radius: 16px; padding: 10px 14px; display: flex; flex-direction: column; gap: 6px; }
+.hud .row { display: flex; justify-content: space-between; gap: 8px; white-space: nowrap; font-size: 12px; font-weight: 700; color: var(--text-2); }
 .gauge { height: 12px; background: var(--track); border-radius: 999px; overflow: hidden; }
 .gauge > div { height: 100%; background: var(--accent); border-radius: 999px; transition: width .4s; }
 .hud .small { font-size: 12px; color: var(--text-3); }
@@ -77,6 +77,15 @@ input, textarea { font-family: inherit; }
 .stage-btn { position: absolute; right: 24px; top: 570px; }
 .hamu { display: block; }
 .hamu, .item-art, .stage .bg { image-rendering: pixelated; }
+/* 2フレームアニメ: f1/f2 を CSS で切り替える（alt = 交互、blink = たまに 2 枚目） */
+.hamu .f2 { visibility: hidden; }
+.hamu.anim .f1, .hamu.anim .f2 { animation-duration: var(--dur, 1s); animation-timing-function: steps(1, end); animation-iteration-count: infinite; }
+.hamu.anim-alt .f1 { animation-name: hf-a; } .hamu.anim-alt .f2 { animation-name: hf-b; }
+.hamu.anim-blink .f1 { animation-name: hb-a; } .hamu.anim-blink .f2 { animation-name: hb-b; }
+@keyframes hf-a { 0%, 49.9% { visibility: visible; } 50%, 100% { visibility: hidden; } }
+@keyframes hf-b { 0%, 49.9% { visibility: hidden; } 50%, 100% { visibility: visible; } }
+@keyframes hb-a { 0%, 91.9% { visibility: visible; } 92%, 100% { visibility: hidden; } }
+@keyframes hb-b { 0%, 91.9% { visibility: hidden; } 92%, 100% { visibility: visible; } }
 .hamu.bob { animation: bob 2.4s ease-in-out infinite; }
 @keyframes bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
 

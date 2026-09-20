@@ -18,7 +18,7 @@
       seeds: 200, gold: 0,
       inventory: { chew: 1 },
       slots: { s1: null, s2: 'box', s3: null, s4: null, s5: null, s6: null },
-      food: { id: 'seed', amount: 100 },
+      bowls: [{ id: 'seed', amount: 100 }, { id: null, amount: 0 }],  // えさ皿（D.BOWLS と同じ数）
       visitors: [],
       album: {},
       log: [],
@@ -45,10 +45,7 @@
         const raw = localStorage.getItem(SAVE_KEY);
         if (raw) {
           const s = JSON.parse(raw);
-          this.state = Object.assign(newState(), s);
-          // 定義から消えたグッズ・はむを掃除
-          for (const k of Object.keys(this.state.slots)) if (this.state.slots[k] && !D.itemById[this.state.slots[k]]) this.state.slots[k] = null;
-          this.state.visitors = this.state.visitors.filter((v) => D.hamsterById[v.hamId]);
+          this.state = this.normalize(Object.assign(newState(), s), s);
           return true;
         }
       } catch (e) { console.warn('save load failed', e); }
@@ -63,8 +60,20 @@
     importSave(text) {
       const s = JSON.parse(decodeURIComponent(escape(atob(text.trim()))));
       if (!s || typeof s.seeds !== 'number') throw new Error('bad save');
-      this.state = Object.assign(newState(), s);
+      this.state = this.normalize(Object.assign(newState(), s), s);
       this.save(); this.emit('reset');
+    }
+    // 古いセーブの読み替えと掃除（raw は読み込んだままのオブジェクト）
+    normalize(st, raw) {
+      // v0.1: えさ皿は 1 つ（food）だった → bowls[0] に移す
+      if (raw && raw.food && !raw.bowls) st.bowls = [raw.food, { id: null, amount: 0 }];
+      delete st.food;
+      st.bowls = (st.bowls || []).slice(0, D.BOWLS.length);
+      while (st.bowls.length < D.BOWLS.length) st.bowls.push({ id: null, amount: 0 });
+      st.visitors = (st.visitors || []).filter((v) => D.hamsterById[v.hamId]).map((v) => (v.slot === 'bowl' ? Object.assign(v, { slot: 'b1' }) : v));
+      // 定義から消えたグッズを掃除
+      for (const k of Object.keys(st.slots)) if (st.slots[k] && !D.itemById[st.slots[k]]) st.slots[k] = null;
+      return st;
     }
 
     // ---- 起動・ループ ----
@@ -100,26 +109,31 @@
     tick(summary) {
       const s = this.state;
       s.tick++;
-      const food = D.foodById[s.food.id] || D.foodById.seed;
-      // えさが減る
-      if (s.food.amount > 0) {
-        const eaters = s.visitors.length;
-        s.food.amount = Math.max(0, s.food.amount - (100 / food.duration) - 0.15 * eaters);
+      const active = this.activeBowls();
+      const best = this.activeFood();               // 入っているえさのうち一番いいもの（なければ null）
+      const food = best || D.foodById.seed;
+      // えさが減る（食べる量は入っている皿で分け合う）
+      const share = active.length ? 0.15 * s.visitors.length / active.length : 0;
+      for (const i of active) {
+        const b = s.bowls[i]; const f = D.foodById[b.id] || D.foodById.seed;
+        b.amount = Math.max(0, b.amount - (100 / f.duration) - share);
       }
       // 帰る
       const staying = [];
       for (const v of s.visitors) {
-        if (s.tick >= v.leaveAt || (s.food.amount <= 0 && Math.random() < 0.35)) this.leave(v, food, summary);
+        if (s.tick >= v.leaveAt || (!best && Math.random() < 0.35)) this.leave(v, food, summary);
         else staying.push(v);
       }
       s.visitors = staying;
-      // 来る（えさがある時だけ）
-      if (s.food.amount <= 0) return;
+      // 来る（えさがある時だけ。2 皿とも入っていると少し来やすい）
+      if (!best) return;
+      const bonus = active.length > 1 ? 1.15 : 1;
       const seats = this.freeSeats();
       for (const seat of seats) {
-        const p = 0.07 * food.attract * (seat.item ? 1 : 0.6);
+        const f = seat.food || best;
+        const p = 0.07 * f.attract * (seat.item ? 1 : 0.6) * bonus;
         if (Math.random() < p) {
-          const ham = this.chooseHamster(seat.item, food);
+          const ham = this.chooseHamster(seat.item, f);
           if (ham) this.arrive(ham, seat, summary);
         }
       }
@@ -135,7 +149,10 @@
         const cap = item.capacity || 1;
         for (let i = 0; i < cap; i++) if (!taken(slot.id, i)) seats.push({ slot: slot.id, seat: i, item });
       }
-      if (!taken('bowl', 0)) seats.push({ slot: 'bowl', seat: 0, item: null });
+      D.BOWLS.forEach((b, i) => {
+        const bw = s.bowls[i];
+        if (bw && bw.amount > 0 && !taken(b.id, 0)) seats.push({ slot: b.id, seat: 0, item: null, food: D.foodById[bw.id] || D.foodById.seed });
+      });
       return seats;
     }
     chooseHamster(item, food) {
@@ -223,11 +240,12 @@
       }
       if (!silent) { this.save(); this.emit('change'); }
     }
-    setFood(foodId) {
+    setFood(foodId, bowlIdx) {
       const f = D.foodById[foodId];
-      if (!f || !this.canAfford(f.cost)) return false;
+      const i = bowlIdx || 0;
+      if (!f || !this.state.bowls[i] || !this.canAfford(f.cost)) return false;
       this.pay(f.cost);
-      this.state.food = { id: foodId, amount: 100 };
+      this.state.bowls[i] = { id: foodId, amount: 100 };
       this.save(); this.emit('change');
       return true;
     }
@@ -245,11 +263,17 @@
       const v = a.visits;
       return v >= 50 ? 5 : v >= 25 ? 4 : v >= 10 ? 3 : v >= 4 ? 2 : 1;
     }
-    foodTimeLeft() {
-      const s = this.state; const f = D.foodById[s.food.id];
-      if (!f || s.food.amount <= 0) return 0;
-      const perTick = (100 / f.duration) + 0.15 * s.visitors.length;
-      return Math.ceil(s.food.amount / perTick) * (TICK_MS / (s.speed || 1));
+    activeBowls() { return this.state.bowls.map((b, i) => (b && b.amount > 0 ? i : -1)).filter((i) => i >= 0); }
+    activeFood() {
+      let best = null;
+      for (const i of this.activeBowls()) { const f = D.foodById[this.state.bowls[i].id]; if (f && (!best || f.attract > best.attract)) best = f; }
+      return best;
+    }
+    foodTimeLeft(bowlIdx) {
+      const s = this.state; const b = s.bowls[bowlIdx || 0]; const f = b && D.foodById[b.id];
+      if (!f || b.amount <= 0) return 0;
+      const perTick = (100 / f.duration) + 0.15 * s.visitors.length / Math.max(1, this.activeBowls().length);
+      return Math.ceil(b.amount / perTick) * (TICK_MS / (s.speed || 1));
     }
   }
 

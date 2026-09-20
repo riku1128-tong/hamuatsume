@@ -100,7 +100,6 @@
     // ---- おへや ----
     renderRoom() {
       const s = this.game.state;
-      const food = D.foodById[s.food.id];
       const slotsHtml = D.SLOTS.map((sl) => {
         const itemId = s.slots[sl.id];
         const style = `left:${sl.x}px;top:${sl.y}px;width:${sl.w}px;height:${sl.h}px`;
@@ -108,29 +107,44 @@
           return `<div class="slot" style="${style}"><button class="slot-empty" style="width:${sl.w - 20}px;height:${sl.h - 60}px" data-slot="${sl.id}"><svg viewBox="0 0 24 24" width="28" height="28"><path d="M12 5 L12 19 M5 12 L19 12" stroke="#ffffff" stroke-width="3" stroke-linecap="round"/></svg>グッズをおく</button></div>`;
         }
         const item = D.itemById[itemId];
-        return `<div class="slot" style="${style}"><div class="slot-item" data-slot="${sl.id}" title="${esc(item.name)}">${A.item(itemId, sl.w, sl.h)}<div class="item-label">${esc(item.name)}</div></div></div>`;
+        return `<div class="slot" style="${style}"><div class="slot-item" data-slot="${sl.id}" title="${esc(item.name)}">${A.item(itemId)}<div class="item-label">${esc(item.name)}</div></div></div>`;
       }).join('');
-      const b = D.BOWL;
-      const bowlHtml = `<div class="bowl-slot" style="left:${b.x}px;top:${b.y}px;width:${b.w}px;height:${b.h}px" data-bowl>${A.bowl(s.food.id, s.food.amount, b.w, b.h)}</div>`;
+      const bowlsHtml = D.BOWLS.map((b, i) => {
+        const bw = s.bowls[i] || { id: null, amount: 0 };
+        const f = bw.id && D.foodById[bw.id];
+        return `<div class="bowl-slot" style="left:${b.x}px;top:${b.y}px;width:${b.w}px;height:${b.h}px" data-bowl="${i}" title="えさ皿${i + 1}${f ? '：' + f.name : '（からっぽ）'}">${A.bowl(bw.id, bw.amount)}</div>`;
+      }).join('');
+      const size = A.HAM_W * A.PX;
       const visitorsHtml = s.visitors.map((v) => {
         const h = D.hamsterById[v.hamId];
-        let sl, anchor;
-        if (v.slot === 'bowl') { sl = b; anchor = { x: 0.5, y: 0.5, s: 0.5 }; }
-        else { sl = D.SLOTS.find((x) => x.id === v.slot); const item = D.itemById[s.slots[v.slot]]; if (!sl || !item) return ''; anchor = (v.seat === 1 && item.anchor2) || item.anchor; }
-        const size = Math.round(sl.h * anchor.s);
-        const x = sl.x + sl.w * anchor.x, y = sl.y + sl.h * anchor.y + size / 2;
+        let x, y, flip = v.flip;
+        const bi = D.BOWLS.findIndex((b) => b.id === v.slot);
+        if (bi >= 0) {
+          const b = D.BOWLS[bi];
+          x = b.x + b.anchor.x * A.PX; y = b.y + b.anchor.y * A.PX; if (b.flip) flip = true;
+        } else {
+          const sl = D.SLOTS.find((q) => q.id === v.slot); const item = sl && D.itemById[s.slots[v.slot]]; if (!sl || !item) return '';
+          const anchor = (v.seat === 1 && item.anchor2) || item.anchor;
+          // グッズはスロット内で下寄せ・中央
+          const ix = sl.x + (sl.w - A.ITEM_W * A.PX) / 2, iy = sl.y + sl.h - A.ITEM_H * A.PX;
+          x = ix + anchor.x * A.PX; y = iy + anchor.y * A.PX;
+        }
         const isNew = s.album[h.id] && s.album[h.id].visits === 1;
-        return `<div class="visitor ${isNew ? 'new' : ''}" style="left:${x}px;top:${y}px" data-ham="${h.id}">${A.hamster({ colors: h.colors, pose: v.pose, flip: v.flip, size, accessory: h.accessory, tail: h.colors.tail, className: 'hamu bob' })}<div class="name">${esc(hamName(s, h))}</div></div>`;
+        return `<div class="visitor ${isNew ? 'new' : ''}" style="left:${x}px;top:${y}px" data-ham="${h.id}">${A.hamster({ colors: h.colors, pose: v.pose, flip, size, accessory: h.accessory, tail: h.colors.tail, className: 'hamu bob', anim: true })}<div class="name">${esc(hamName(s, h))}</div></div>`;
       }).join('');
-      const left = this.game.foodTimeLeft();
-      const hud = `<div class="hud"><div class="row"><span>えさ：${esc(food.name)}</span><span>のこり ${Math.round(s.food.amount)}%</span></div><div class="gauge"><div style="width:${Math.round(s.food.amount)}%"></div></div><div class="small">${s.food.amount > 0 ? `なくなるまで あと ${fmtDur(left)}` : 'えさがありません。えさタブで補充してね'}</div><button class="btn sm" data-goto="food">えさをえらぶ</button></div>`;
-      this.$screen.innerHTML = `<div class="room-wrap" id="roomwrap"><div class="stage-inner"><div class="stage" id="stage">${A.room()}${slotsHtml}${bowlHtml}${visitorsHtml}${hud}<button class="btn stage-btn" data-log>おみやげ帳</button></div></div></div>
+      const bowlRows = D.BOWLS.map((b, i) => {
+        const bw = s.bowls[i] || { id: null, amount: 0 }; const f = bw.id && D.foodById[bw.id]; const left = this.game.foodTimeLeft(i);
+        return `<div class="row"><span>皿${i + 1}　${f ? esc(f.name) : 'からっぽ'}</span><span>${bw.amount > 0 ? `${Math.round(bw.amount)}%（あと ${fmtDur(left)}）` : '—'}</span></div><div class="gauge"><div style="width:${Math.round(bw.amount)}%"></div></div>`;
+      }).join('');
+      const anyFood = this.game.activeBowls().length > 0;
+      const hud = `<div class="hud">${bowlRows}<div class="small">${anyFood ? 'えさがあるあいだ、はむが遊びに来ます' : 'えさがありません。えさタブで補充してね'}</div><button class="btn sm" data-goto="food">えさをえらぶ</button></div>`;
+      this.$screen.innerHTML = `<div class="room-wrap" id="roomwrap"><div class="stage-inner"><div class="stage" id="stage">${A.room()}${slotsHtml}${bowlsHtml}${visitorsHtml}${hud}<button class="btn stage-btn" data-log>おみやげ帳</button></div></div></div>
         <div class="page">${hud.replace('class="hud"', 'class="hud hud-mobile"')}<div class="muted">グッズをタップすると入れ替え、はむをタップすると詳細が見られます。えさがあるあいだ、時間がたつとハムスターが遊びに来ます（ブラウザを閉じていてもOK）。</div></div>`;
       this.fitStage();
       this.$screen.querySelectorAll('[data-slot]').forEach((e) => e.addEventListener('click', () => this.openPicker(e.dataset.slot)));
       this.$screen.querySelectorAll('[data-ham]').forEach((e) => e.addEventListener('click', (ev) => { ev.stopPropagation(); this.openDetail(e.dataset.ham); }));
       this.$screen.querySelectorAll('[data-goto]').forEach((e) => e.addEventListener('click', () => { this.screen = e.dataset.goto; this.render(); }));
-      const bowl = this.$screen.querySelector('[data-bowl]'); if (bowl) bowl.addEventListener('click', () => { this.screen = 'food'; this.render(); });
+      this.$screen.querySelectorAll('[data-bowl]').forEach((e) => e.addEventListener('click', () => { this.foodBowl = Number(e.dataset.bowl) || 0; this.screen = 'food'; this.render(); }));
       this.$screen.querySelector('[data-log]').addEventListener('click', () => this.openLog());
     }
     fitStage() {
@@ -177,7 +191,7 @@
       const stars = [1, 2, 3].map((i) => A.ICONS.star(i <= h.rarity)).join('');
       const likes = Object.entries(h.likes).sort((x, y) => y[1] - x[1]).map(([id]) => D.itemById[id]).filter(Boolean);
       const food = D.foodById[h.food];
-      const portrait = A.hamster({ colors: h.colors, pose, size: 130, silhouette: !known, accessory: h.accessory, tail: h.colors.tail });
+      const portrait = A.hamster({ colors: h.colors, pose, size: 130, silhouette: !known, accessory: h.accessory, tail: h.colors.tail, anim: known });
       const lv = this.game.friendship(hamId);
       let body;
       if (known) {
@@ -208,7 +222,7 @@
         const a = s.album[h.id]; const known = a && a.visits > 0;
         const no = String(D.HAMSTERS.indexOf(h) + 1).padStart(2, '0');
         const pose = known ? A.POSE_LIST[(a.visits + h.id.length) % A.POSE_LIST.length] : 'front';
-        const art = A.hamster({ colors: h.colors, pose, flip: h.id.length % 2 === 1, size: 88, silhouette: !known, accessory: h.accessory, tail: h.colors.tail });
+        const art = A.hamster({ colors: h.colors, pose, flip: h.id.length % 2 === 1, size: 88, silhouette: !known, accessory: h.accessory, tail: h.colors.tail, anim: known });
         const group = D.GROUPS.find((g) => g.id === h.group);
         return `<button class="card ${known ? '' : 'unknown'} ${h.group === 'rare' ? 'rare' : ''}" data-ham="${h.id}"><span class="no">No.${no}</span>${h.group === 'rare' ? '<span class="rare-badge">レア</span>' : ''}<div class="art">${art}${known ? '' : '<div class="q">?</div>'}</div><div class="nm">${known ? esc(hamName(s, h)) : '？？？'}</div><div class="kind">${esc(group.name)}</div><div class="vis">${known ? `きた回数 ${a.visits}` : 'まだ会っていない'}</div></button>`;
       }).join('');
@@ -237,17 +251,25 @@
     // ---- えさ ----
     renderFood() {
       const s = this.game.state;
+      const sel = Math.min(this.foodBowl || 0, D.BOWLS.length - 1);
+      const cur = s.bowls[sel] || { id: null, amount: 0 };
+      const curFood = cur.id && D.foodById[cur.id];
+      const tabs = D.BOWLS.map((b, i) => {
+        const bw = s.bowls[i] || { id: null, amount: 0 }; const f = bw.id && D.foodById[bw.id];
+        return `<button class="btn tab ${i === sel ? 'active' : ''}" data-bowl="${i}">えさ皿${i + 1}　${f ? `${esc(f.name)} ${Math.round(bw.amount)}%` : 'からっぽ'}</button>`;
+      }).join('');
       const rows = D.FOODS.map((f) => {
-        const active = s.food.id === f.id;
+        const active = cur.id === f.id && cur.amount > 0;
         const can = this.game.canAfford(f.cost);
         const fans = D.HAMSTERS.filter((h) => h.food === f.id).length;
         return `<div class="rowcard ${active ? 'active' : ''}"><div class="thumb">${A.bowl(f.id, 100, 88, 70)}</div><div class="body"><div class="ttl">${esc(f.name)}${active ? ' <span class="pill">いま入っている</span>' : ''}</div><div class="desc">${esc(f.desc)}</div><div class="meta">${costHtml(f.cost)}<span class="muted">来やすさ ×${f.attract}／おみやげ ×${f.gift}／すきな子 ${fans}匹</span></div></div><div class="act"><button class="btn primary sm" data-food="${f.id}" ${can ? '' : 'disabled'}>${active ? 'おかわり' : 'いれる'}</button></div></div>`;
       }).join('');
-      const cur = D.foodById[s.food.id];
-      this.$screen.innerHTML = `<div class="page"><div class="page-head"><div class="page-title">えさ</div><span class="muted">えさ皿：${esc(cur.name)}　のこり ${Math.round(s.food.amount)}%（${s.food.amount > 0 ? 'あと ' + fmtDur(this.game.foodTimeLeft()) : 'からっぽ'}）</span></div><div class="list">${rows}</div></div>`;
+      const status = curFood && cur.amount > 0 ? `${esc(curFood.name)}　のこり ${Math.round(cur.amount)}%（あと ${fmtDur(this.game.foodTimeLeft(sel))}）` : 'からっぽ';
+      this.$screen.innerHTML = `<div class="page"><div class="page-head"><div class="page-title">えさ</div><span class="muted">えさ皿は 2 か所。2 皿とも入っていると少し来やすくなります。</span></div><div class="tabs">${tabs}</div><div class="muted">えさ皿${sel + 1}：${status}</div><div class="list">${rows}</div></div>`;
+      this.$screen.querySelectorAll('[data-bowl]').forEach((b) => b.addEventListener('click', () => { this.foodBowl = Number(b.dataset.bowl); this.render(); }));
       this.$screen.querySelectorAll('[data-food]').forEach((b) => b.addEventListener('click', () => {
         const f = D.foodById[b.dataset.food];
-        if (this.game.setFood(f.id)) this.toast(`えさ皿に ${esc(f.name)} を いれました`, null, null, true, 2000);
+        if (this.game.setFood(f.id, sel)) this.toast(`えさ皿${sel + 1}に ${esc(f.name)} を いれました`, null, null, true, 2000);
       }));
     }
 
@@ -255,7 +277,7 @@
     renderSettings() {
       const s = this.game.state;
       const speeds = [1, 10, 60].map((x) => `<button class="btn sm tab ${s.speed === x ? 'active' : ''}" data-speed="${x}">×${x}</button>`).join('');
-      const poses = D.HAMSTERS.slice(0, 6).map((h, i) => A.hamster({ colors: h.colors, pose: A.POSE_LIST[i], size: 64, flip: i % 2 === 1, accessory: h.accessory })).join('');
+      const poses = D.HAMSTERS.slice(0, 6).map((h, i) => A.hamster({ colors: h.colors, pose: A.POSE_LIST[i], size: 64, flip: i % 2 === 1, accessory: h.accessory, anim: true })).join('');
       this.$screen.innerHTML = `<div class="page"><div class="page-title">せってい</div>
         <div class="settings-row"><span class="ttl">時間の速さ</span>${speeds}<span class="desc">ふつうは ×1（1分ごとに来訪チェック）。動作確認用に速くできます。</span></div>
         <div class="settings-row"><span class="ttl">セーブデータ</span><button class="btn sm" data-export>書き出す</button><button class="btn sm" data-import>読み込む</button><span class="desc">別のブラウザや端末に引っ越すときに使います。</span><textarea class="save" data-savetext placeholder="ここに書き出したデータが出ます／読み込むデータを貼ります"></textarea></div>
@@ -275,7 +297,7 @@
 
     // ---- はじめての案内 ----
     intro() {
-      const html = `<h2>はむあつめへ ようこそ！</h2><div style="display:flex;justify-content:center">${A.hamster({ colors: D.hamsterById.djun_pudding.colors, pose: 'front', size: 110 })}</div>
+      const html = `<h2>はむあつめへ ようこそ！</h2><div style="display:flex;justify-content:center">${A.hamster({ colors: D.hamsterById.djun_pudding.colors, pose: 'front', size: 110, anim: true })}</div>
         <div class="story">おへやに <b>えさ</b> と <b>グッズ</b> を置いておくと、時間がたつにつれてハムスターが遊びに来ます。<br>帰るときに <b>ひまわりの種</b> を置いていくので、それで新しいグッズを買って、<b>はむ図鑑</b> を埋めていきましょう。<br><br>最初のえさ皿にはひまわりの種が入っています。まずは「かじり木」をおへやの空きスロットに置いてみよう！</div>
         <button class="btn primary" data-ok>はじめる</button>`;
       this.modal(html, { setup: (m) => { m.querySelector('[data-ok]').onclick = () => { this.game.markIntro(); this.closeModal(); }; } });

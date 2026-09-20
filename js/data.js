@@ -16,24 +16,25 @@
 
   // ---- グッズ -----------------------------------------------------------
   // pose: そのグッズで遊ぶときのハムスターのポーズ
-  // anchor: グッズ画像内でハムスターを置く位置（0-1 の相対座標）と大きさ
+  // anchor: ハムスターを置く位置（グッズの 44×36 グリッド座標。ハムスターの足元中央がここに来る）
+  // capacity: 同時に来られる数（2 のときは anchor2 も指定）  flip: 左右ランダム
   const ITEMS = [
-    { id: 'wheel',    name: '回し車',           desc: 'カラカラ回して走る定番。',              cost: { seed: 150 }, pose: 'side',  size: 'm', anchor: { x: 0.5, y: 0.62, s: 0.5 },  flip: true },
-    { id: 'house',    name: '木の巣箱',         desc: '暗くて落ち着く。お昼寝に。',            cost: { seed: 200 }, pose: 'sleep', size: 'm', anchor: { x: 0.5, y: 0.78, s: 0.42 } },
-    { id: 'tunnel',   name: 'トンネル',         desc: 'くぐるのが好きな子が来る。',            cost: { seed: 180 }, pose: 'back',  size: 'l', anchor: { x: 0.14, y: 0.72, s: 0.36 } },
-    { id: 'sand',     name: '砂場',             desc: '砂浴びでさっぱり。',                    cost: { seed: 120 }, pose: 'front', size: 'm', anchor: { x: 0.5, y: 0.55, s: 0.48 } },
-    { id: 'box',      name: 'ダンボールハウス', desc: '安いけど意外と人気。',                  cost: { seed: 80 },  pose: 'back',  size: 's', anchor: { x: 0.5, y: 0.7, s: 0.5 } },
-    { id: 'chew',     name: 'かじり木',         desc: 'カリカリ歯をととのえる。',              cost: { seed: 100 }, pose: 'eat',   size: 's', anchor: { x: 0.5, y: 0.6, s: 0.5 } },
-    { id: 'bed',      name: 'ふわふわベッド',   desc: 'もぐって寝る子が多い。',                cost: { seed: 220 }, pose: 'sleep', size: 'm', anchor: { x: 0.5, y: 0.5, s: 0.5 } },
-    { id: 'hammock',  name: 'ハンモック',       desc: 'ゆらゆら。ごろんと寝転ぶ。',            cost: { seed: 300 }, pose: 'belly', size: 'm', anchor: { x: 0.5, y: 0.52, s: 0.5 } },
-    { id: 'cabbage',  name: 'キャベツ畑',       desc: 'かじり放題のプランター。',              cost: { seed: 260 }, pose: 'eat',   size: 'm', anchor: { x: 0.5, y: 0.55, s: 0.46 } },
-    { id: 'seesaw',   name: 'シーソー',         desc: '二匹で遊ぶこともある。',                cost: { seed: 340 }, pose: 'front', size: 'l', anchor: { x: 0.25, y: 0.5, s: 0.4 }, capacity: 2, anchor2: { x: 0.75, y: 0.5, s: 0.4 } },
-    { id: 'sunflower',name: 'ひまわりの鉢',     desc: '大きなひまわり。仙人が気になるらしい。',cost: { seed: 600 }, pose: 'eat',   size: 'l', anchor: { x: 0.5, y: 0.8, s: 0.36 } },
-    { id: 'treasure', name: 'お宝箱',           desc: 'なにが入っているのだろう。',            cost: { seed: 800 }, pose: 'back',  size: 's', anchor: { x: 0.5, y: 0.75, s: 0.46 } },
-    { id: 'onsen',    name: 'ひのき温泉',       desc: 'ぽかぽか。極楽。',                      cost: { gold: 25 },  pose: 'sleep', size: 'm', anchor: { x: 0.5, y: 0.45, s: 0.44 } },
-    { id: 'ice',      name: 'こおりのベッド',   desc: 'ひんやり。夏でも雪が好きな子に。',      cost: { gold: 20 },  pose: 'belly', size: 'm', anchor: { x: 0.5, y: 0.5, s: 0.5 } },
-    { id: 'castle',   name: 'はむのおしろ',     desc: '王子が住むと噂のおしろ。',              cost: { gold: 45 },  pose: 'front', size: 'l', anchor: { x: 0.5, y: 0.8, s: 0.34 } },
-    { id: 'dojo',     name: '忍者どうじょう',   desc: '夜になると何かの気配が…',              cost: { gold: 30 },  pose: 'side',  size: 'm', anchor: { x: 0.5, y: 0.74, s: 0.4 }, flip: true },
+    { id: 'wheel',    name: '回し車',           desc: 'カラカラ回して走る定番。',              cost: { seed: 150 }, pose: 'side',  size: 'm', anchor: { x: 22, y: 30 },  flip: true },
+    { id: 'house',    name: '木の巣箱',         desc: '暗くて落ち着く。お昼寝に。',            cost: { seed: 200 }, pose: 'sleep', size: 'm', anchor: { x: 22, y: 35 } },
+    { id: 'tunnel',   name: 'トンネル',         desc: 'くぐるのが好きな子が来る。',            cost: { seed: 180 }, pose: 'back',  size: 'l', anchor: { x: 7, y: 35 } },
+    { id: 'sand',     name: '砂場',             desc: '砂浴びでさっぱり。',                    cost: { seed: 120 }, pose: 'front', size: 'm', anchor: { x: 22, y: 31 } },
+    { id: 'box',      name: 'ダンボールハウス', desc: '安いけど意外と人気。',                  cost: { seed: 80 },  pose: 'back',  size: 's', anchor: { x: 17, y: 36 } },
+    { id: 'chew',     name: 'かじり木',         desc: 'カリカリ歯をととのえる。',              cost: { seed: 100 }, pose: 'eat',   size: 's', anchor: { x: 13, y: 36 } },
+    { id: 'bed',      name: 'ふわふわベッド',   desc: 'もぐって寝る子が多い。',                cost: { seed: 220 }, pose: 'sleep', size: 'm', anchor: { x: 22, y: 29 } },
+    { id: 'hammock',  name: 'ハンモック',       desc: 'ゆらゆら。ごろんと寝転ぶ。',            cost: { seed: 300 }, pose: 'belly', size: 'm', anchor: { x: 22, y: 26 } },
+    { id: 'cabbage',  name: 'キャベツ畑',       desc: 'かじり放題のプランター。',              cost: { seed: 260 }, pose: 'eat',   size: 'm', anchor: { x: 22, y: 36 } },
+    { id: 'seesaw',   name: 'シーソー',         desc: '二匹で遊ぶこともある。',                cost: { seed: 340 }, pose: 'front', size: 'l', anchor: { x: 9, y: 27 }, capacity: 2, anchor2: { x: 35, y: 20 } },
+    { id: 'sunflower',name: 'ひまわりの鉢',     desc: '大きなひまわり。仙人が気になるらしい。',cost: { seed: 600 }, pose: 'eat',   size: 'l', anchor: { x: 9, y: 36 } },
+    { id: 'treasure', name: 'お宝箱',           desc: 'なにが入っているのだろう。',            cost: { seed: 800 }, pose: 'back',  size: 's', anchor: { x: 22, y: 36 } },
+    { id: 'onsen',    name: 'ひのき温泉',       desc: 'ぽかぽか。極楽。',                      cost: { gold: 25 },  pose: 'sleep', size: 'm', anchor: { x: 22, y: 23 } },
+    { id: 'ice',      name: 'こおりのベッド',   desc: 'ひんやり。夏でも雪が好きな子に。',      cost: { gold: 20 },  pose: 'belly', size: 'm', anchor: { x: 22, y: 28 } },
+    { id: 'castle',   name: 'はむのおしろ',     desc: '王子が住むと噂のおしろ。',              cost: { gold: 45 },  pose: 'front', size: 'l', anchor: { x: 22, y: 36 } },
+    { id: 'dojo',     name: '忍者どうじょう',   desc: '夜になると何かの気配が…',              cost: { gold: 30 },  pose: 'side',  size: 'm', anchor: { x: 22, y: 36 }, flip: true },
   ];
 
   // ---- ハムスター -------------------------------------------------------
@@ -125,21 +126,25 @@
     { id: 'rare',   name: 'レアはむ' },
   ];
 
-  // おへやのスロット（画面座標は 1280x640 基準）
+  // おへやのスロット（画面座標は 1280x640 基準）。グッズは 220x180（44x36 グリッド × 5px）で下寄せに置く
   const SLOTS = [
-    { id: 's1', x: 60,  y: 180, w: 220, h: 220 },
-    { id: 's2', x: 330, y: 200, w: 220, h: 220 },
-    { id: 's3', x: 620, y: 160, w: 260, h: 220 },
-    { id: 's4', x: 960, y: 180, w: 240, h: 220 },
-    { id: 's5', x: 120, y: 420, w: 220, h: 180 },
-    { id: 's6', x: 950, y: 420, w: 220, h: 180 },
+    { id: 's1', x: 60,  y: 150, w: 220, h: 180 },
+    { id: 's2', x: 330, y: 215, w: 220, h: 180 },
+    { id: 's3', x: 640, y: 150, w: 220, h: 180 },
+    { id: 's4', x: 960, y: 150, w: 220, h: 180 },
+    { id: 's5', x: 100, y: 400, w: 220, h: 180 },
+    { id: 's6', x: 960, y: 400, w: 220, h: 180 },
   ];
-  const BOWL = { x: 520, y: 430, w: 220, h: 160 };
+  // えさ皿（最大 2 か所）。anchor は皿の 24x14 グリッド座標（ハムスターの足元中央）
+  const BOWLS = [
+    { id: 'b1', x: 470, y: 470, w: 120, h: 70, anchor: { x: 1, y: 14 } },
+    { id: 'b2', x: 690, y: 470, w: 120, h: 70, anchor: { x: 23, y: 14 }, flip: true },
+  ];
 
   const byId = (list) => Object.fromEntries(list.map((x) => [x.id, x]));
 
   global.HamuData = {
-    FOODS, ITEMS, HAMSTERS, GROUPS, SLOTS, BOWL,
+    FOODS, ITEMS, HAMSTERS, GROUPS, SLOTS, BOWLS,
     foodById: byId(FOODS), itemById: byId(ITEMS), hamsterById: byId(HAMSTERS),
   };
 })(window);
