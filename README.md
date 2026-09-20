@@ -22,11 +22,11 @@ GitHub Pages で公開する場合は、Settings → Pages → Branch を `main`
 index.html      エントリ
 css/style.css   スタイル
 js/data.js      ハムスター・グッズ・えさの定義
-js/art.js       ハムスターのSVG描画（ポーズ×カラー）
+js/art.js       ドット絵描画（ハムスター ポーズ×カラー、グッズ、背景）
 js/game.js      ゲーム状態・来訪シミュレーション・セーブ
 js/ui.js        画面描画
 js/main.js      起動
-design/         画面モックアップ（Claude Design 形式）
+design/         画面モックアップ（Claude Design 形式）、sprites.html（ドット絵一覧）
 ```
 
 セーブデータはブラウザの localStorage に保存されます。

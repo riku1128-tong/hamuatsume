@@ -105,7 +105,7 @@
         const itemId = s.slots[sl.id];
         const style = `left:${sl.x}px;top:${sl.y}px;width:${sl.w}px;height:${sl.h}px`;
         if (!itemId) {
-          return `<div class="slot" style="${style}"><button class="slot-empty" style="width:${sl.w - 20}px;height:${sl.h - 60}px" data-slot="${sl.id}"><svg viewBox="0 0 24 24" width="28" height="28"><path d="M12 5 L12 19 M5 12 L19 12" stroke="#a5804f" stroke-width="3" stroke-linecap="round"/></svg>グッズをおく</button></div>`;
+          return `<div class="slot" style="${style}"><button class="slot-empty" style="width:${sl.w - 20}px;height:${sl.h - 60}px" data-slot="${sl.id}"><svg viewBox="0 0 24 24" width="28" height="28"><path d="M12 5 L12 19 M5 12 L19 12" stroke="#ffffff" stroke-width="3" stroke-linecap="round"/></svg>グッズをおく</button></div>`;
         }
         const item = D.itemById[itemId];
         return `<div class="slot" style="${style}"><div class="slot-item" data-slot="${sl.id}" title="${esc(item.name)}">${A.item(itemId, sl.w, sl.h)}<div class="item-label">${esc(item.name)}</div></div></div>`;
@@ -124,8 +124,7 @@
       }).join('');
       const left = this.game.foodTimeLeft();
       const hud = `<div class="hud"><div class="row"><span>えさ：${esc(food.name)}</span><span>のこり ${Math.round(s.food.amount)}%</span></div><div class="gauge"><div style="width:${Math.round(s.food.amount)}%"></div></div><div class="small">${s.food.amount > 0 ? `なくなるまで あと ${fmtDur(left)}` : 'えさがありません。えさタブで補充してね'}</div><button class="btn sm" data-goto="food">えさをえらぶ</button></div>`;
-      const chips = `<svg class="chips" viewBox="0 0 1280 440"><g fill="#ecd9b3"><ellipse cx="120" cy="60" rx="22" ry="9"/><ellipse cx="420" cy="120" rx="26" ry="10"/><ellipse cx="760" cy="40" rx="20" ry="8"/><ellipse cx="1120" cy="90" rx="24" ry="9"/><ellipse cx="240" cy="330" rx="26" ry="10"/><ellipse cx="560" cy="380" rx="22" ry="9"/><ellipse cx="900" cy="300" rx="28" ry="10"/><ellipse cx="1180" cy="400" rx="22" ry="9"/><ellipse cx="660" cy="240" rx="20" ry="8"/></g></svg>`;
-      this.$screen.innerHTML = `<div class="room-wrap" id="roomwrap"><div class="stage-inner"><div class="stage" id="stage"><div class="wall"></div><div class="window"></div><div class="poster">${A.item('sunflower', 70, 60)}<span>ひまわり畑へ行こう</span></div>${chips}${slotsHtml}${bowlHtml}${visitorsHtml}${hud}<button class="btn stage-btn" data-log>おみやげ帳</button></div></div></div>
+      this.$screen.innerHTML = `<div class="room-wrap" id="roomwrap"><div class="stage-inner"><div class="stage" id="stage">${A.room()}${slotsHtml}${bowlHtml}${visitorsHtml}${hud}<button class="btn stage-btn" data-log>おみやげ帳</button></div></div></div>
         <div class="page">${hud.replace('class="hud"', 'class="hud hud-mobile"')}<div class="muted">グッズをタップすると入れ替え、はむをタップすると詳細が見られます。えさがあるあいだ、時間がたつとハムスターが遊びに来ます（ブラウザを閉じていてもOK）。</div></div>`;
       this.fitStage();
       this.$screen.querySelectorAll('[data-slot]').forEach((e) => e.addEventListener('click', () => this.openPicker(e.dataset.slot)));

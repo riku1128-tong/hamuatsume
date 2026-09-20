@@ -1,0 +1,22 @@
+<!doctype html><html lang="ja"><head><meta charset="utf-8"><title>はむあつめ スプライト一覧（?sec=poses|all|items|bowls|room）</title>
+<style>body{margin:12px;background:#f6e7c8;font-family:sans-serif}.row{display:flex;flex-wrap:wrap;gap:6px;align-items:flex-end}.c{text-align:center;font-size:10px}.stage{width:1280px;height:640px;position:relative;background:#8cb864;transform:scale(.5);transform-origin:0 0}.stage .bg{position:absolute;left:0;top:0}#wrap{height:330px}</style></head>
+<body>
+<h3>poses</h3><div class="row" id="poses"></div>
+<h3>all hamsters</h3><div class="row" id="all"></div>
+<h3>items</h3><div class="row" id="items"></div>
+<h3>bowls</h3><div class="row" id="bowls"></div>
+<h3>room</h3><div id="wrap"><div class="stage" id="room"></div></div>
+<script src="../js/data.js"></script><script src="../js/art.js"></script>
+<script>
+const D=window.HamuData,A=window.HamuArt;const sec=new URLSearchParams(location.search).get('sec')||'poses';document.querySelectorAll('h3').forEach(h=>{const id=h.nextElementSibling.id==='wrap'?'room':h.nextElementSibling.id;if(id!==sec){h.remove();}});['poses','all','items','bowls','wrap'].forEach(id=>{const k=id==='wrap'?'room':id;if(k!==sec)document.getElementById(id).remove();});const $=(id)=>document.getElementById(id)||{set innerHTML(v){}};
+const gold=D.hamsterById.golden, pud=D.hamsterById.djun_pudding, robo=D.hamsterById.robo_white, chin=D.hamsterById.chinese, dal=D.hamsterById.golden_dalm;
+let h='';
+for (const pose of A.POSE_LIST) for (const ham of [gold,pud,robo,chin,dal]) h+=`<div class="c">${A.hamster({colors:ham.colors,pose,size:100,tail:ham.colors.tail})}${pose}</div>`;
+h+=`<div class="c">${A.hamster({colors:gold.colors,pose:'side',flip:true,size:100})}flip</div><div class="c">${A.hamster({colors:gold.colors,pose:'front',size:100,silhouette:true})}sil</div>`;
+$('poses').innerHTML=h;
+$('all').innerHTML=D.HAMSTERS.map(x=>`<div class="c">${A.hamster({colors:x.colors,pose:'front',size:80,accessory:x.accessory,tail:x.colors.tail})}${x.name.slice(0,8)}</div>`).join('')+D.HAMSTERS.filter(x=>x.accessory).map(x=>A.POSE_LIST.map(p=>`<div class="c">${A.hamster({colors:x.colors,pose:p,size:80,accessory:x.accessory})}${x.accessory}/${p}</div>`).join('')).join('');
+$('items').innerHTML=D.ITEMS.map(i=>`<div class="c">${A.item(i.id,150,120)}${i.name}</div>`).join('');
+$('bowls').innerHTML=D.FOODS.map(f=>`<div class="c">${A.bowl(f.id,100,150,120)}${f.name}</div>`).join('')+`<div class="c">${A.bowl('seed',20,150,120)}20%</div><div class="c">${A.bowl('seed',0,150,120)}0%</div>`+A.ICONS.seed+A.ICONS.gold+A.ICONS.star(true)+A.ICONS.star(false);
+$('room').innerHTML=A.room();
+window.onerror=(m)=>{document.body.insertAdjacentHTML('afterbegin','<pre style="color:red">'+m+'</pre>')};
+</script></body></html>
