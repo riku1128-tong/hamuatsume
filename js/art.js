@@ -2,8 +2,8 @@
    すべてピクセルグリッド → インライン SVG <path>（shape-rendering: crispEdges）で描く。画像ファイルは使わない。
    1 グリッド = PX(2.5) 画面px。ハムスター 48×48、グッズ 88×72、えさ皿 48×28、背景 512×256 で密度をそろえる。
 
-   カメラは「斜め上から見下ろす 3/4 俯瞰」（背景の牧場と同じ）。ハムスターは正面立ち絵ではなく、
-   背中が見える丸い塊として描き、顔は塊の下半分・耳は上・手足は塊のふちに少しだけ出す。
+   カメラは「斜め上から見下ろす 3/4 俯瞰」（背景の牧場と同じ）。ハムスターは大きな丸い頭＋小さな体の 2 頭身で、
+   体を短く描いて俯瞰に合わせる。目は丸いビーズ＋ハイライト（虫っぽく見える記号は使わない）。
    文字絵ではなく楕円の組み合わせ + 部品ごとの自動輪郭で描く（ねこあつめの「ベクター絵を低解像度にした」質感）。 */
 (function (global) {
   'use strict';
@@ -100,109 +100,113 @@
 
   // =====================================================================
   // ハムスター（48×48、右向き基準、各ポーズ 2 フレーム）
-  //   3/4 俯瞰の「饅頭」: 背中（上半分）＋顔（下半分）が一体の楕円。耳は上、ほっぺは左右に張り出し、
-  //   手は塊の下ふち、足は塊の左右下から少し。目は縦 1×3、鼻を頂点にした小さな ω、ヒゲはほっぺの外。
+  //   大きな丸い頭 + 小さな体の 2 頭身（軽い俯瞰）。目は丸いビーズ＋白いハイライト、小さな鼻と ω、ほっぺに薄い赤み。
+  //   不気味になる記号（縦スリットの目・外に突き出るヒゲ・塊から生えた小さな肢）は使わない。
   // =====================================================================
   const DEF = { body: '#e0a565', belly: '#fff5e6', ear: '#f3c1b0', stripe: 'none', brow: 'none', eye: '#2b2320', nose: '#e08a8a', line: '#4a3324', spots: 'none', face: 'none' };
   const SIL = { body: '#cdc3b5', belly: '#cdc3b5', ear: '#cdc3b5', stripe: 'none', brow: 'none', eye: '#b5a994', nose: '#b5a994', line: '#b5a994', spots: 'none', face: 'none' };
   const SEED = '#6b4a2a';
 
-  // 正面向きの顔。(cx, cy) = 鼻の位置、hw = ヒゲの起点（ほっぺの外縁）までの半幅
-  function faceFront(p, c, cx, cy, hw, blink, sides) {
-    const L = c.line;
-    if (c.brow) { p.ellipse(cx - 7, cy - 5, 3, 2, c.brow); p.ellipse(cx + 6, cy - 5, 3, 2, c.brow); }
-    p.ellipse(cx - 0.5, cy + 2, 6, 3, c.belly);                                                       // マズル
-    if (blink) { p.rect(cx - 8, cy - 5, 3, 1, c.eye); p.rect(cx + 5, cy - 5, 3, 1, c.eye); }
-    else { p.rect(cx - 7, cy - 6, 1, 3, c.eye); p.rect(cx + 6, cy - 6, 1, 3, c.eye); }
-    p.rect(cx - 1, cy, 2, 1, c.nose);                                                                 // 鼻（ω の頂点）
-    p.put(cx - 3, cy, L); p.put(cx + 2, cy, L); p.put(cx - 2, cy + 1, L); p.put(cx + 1, cy + 1, L);   // ω
-    (sides || [-1, 1]).forEach((s) => {                                                               // ヒゲ 2 本ずつ
-      const x0 = s < 0 ? cx - hw - 4 : cx + hw + 1;
-      p.rect(x0, cy - 1, 4, 1, L); p.rect(x0, cy + 2, 4, 1, L);
-    });
-  }
+  // ---- 顔の部品（不気味にならないための約束: 目は丸いビーズ＋白いハイライト、ヒゲ・スリット目・突き出る肢は使わない） ----
+  const BLUSH = '#f5b7ad';
+  const mouthColor = (c) => (c.dark ? c.belly : '#8a5a3a');
+  const eye = (p, c, x, y, closed) => {
+    if (closed) { p.rect(x - 1, y, 3, 1, c.eye); return; }
+    p.ellipse(x, y, 1.5, 1.5, c.eye); p.put(x - 1, y - 1, '#ffffff');
+  };
+  const happyEye = (p, c, x, y) => { p.put(x - 2, y + 1, c.eye); p.put(x - 1, y, c.eye); p.put(x, y, c.eye); p.put(x + 1, y + 1, c.eye); };   // 寝顔の「⌒」
+  const nose = (p, c, x, y) => p.rect(x, y, 2, 1, c.nose);
+  const mouthW = (p, c, x, y) => { const m = mouthColor(c); p.put(x - 2, y, m); p.put(x, y, m); p.put(x + 2, y, m); p.put(x - 1, y + 1, m); p.put(x + 1, y + 1, m); };   // 小さな ω（x が中心）
   const ear = (p, c, x, y, r) => p.part((t) => { t.ellipse(x, y, r, r, c.body); t.ellipse(x, y + 0.5, r - 2, r - 2.5, c.ear); }, c.line);
   const pad = (p, c, x, y, rx, ry, col) => p.part((t) => t.ellipse(x, y, rx, ry, col || c.belly), c.line);
   function zzz(p, c, x, y) {
     const z = (x0, y0, s) => { p.rect(x0, y0, s, 1, c.line); p.line(x0 + s - 1, y0 + 1, x0, y0 + s - 2, c.line); p.rect(x0, y0 + s - 1, s, 1, c.line); };
     z(x, y, 5); z(x + 6, y - 6, 3);
   }
-  // 正面向きの塊（front / eat / back で共用）
-  function blobFront(p, c, withFace, f, eat) {
-    // 足（塊の左右下から少し）
-    pad(p, c, 12, 44, 3.5, 1.5); pad(p, c, 36, 44, 3.5, 1.5);
-    // 塊: 背中〜顔、ほっぺで下ぶくれ
-    p.part((t) => { t.ellipse(24, 28, 18, 14, c.body); t.ellipse(7, 32, 5, 4.5, c.body); t.ellipse(41, 32, 5, 4.5, c.body); }, c.line);
-    // 模様
-    if (c.face && withFace) p.ellipse(24, 32, 12, 8, c.face);
-    if (c.stripe) p.rect(23, 14, 2, withFace ? 11 : 27, c.stripe);
-    if (c.spots) { p.ellipse(31, 19, 5, 3.5, c.spots); p.ellipse(13, 24, 3.5, 3, c.spots); }
-    // 耳（頭の上、背中側にかぶさる）
-    ear(p, c, 13, 17, 4); ear(p, c, 35, 17, 4);
+  // 正面向き（front / eat / back で共用）: 大きな丸い頭 + 小さな体の 2 頭身
+  function bodyFront(p, c, withFace, f, eat) {
+    pad(p, c, 15, 45, 3.5, 1.5); pad(p, c, 33, 45, 3.5, 1.5);                                     // 足
+    p.part((t) => t.ellipse(24, 36, 12, 9, c.body), c.line);                                       // 体
+    if (c.spots) p.ellipse(15, 35, 3.5, 2.5, c.spots);
+    if (withFace) p.ellipse(24, 39, 7, 5, c.belly);                                                // おなか
+    if (withFace && !eat) { pad(p, c, 20, 41, 2.5, 1.5); pad(p, c, 28, 41, 2.5, 1.5); }           // 手
+    ear(p, c, 12, 10, 4.5); ear(p, c, 36, 10 + (f && !withFace ? -1 : 0), 4.5);                   // 耳（頭のうしろ）
+    p.part((t) => { t.ellipse(24, 20, 15, 13, c.body); t.ellipse(11, 25, 5, 4, c.body); t.ellipse(37, 25, 5, 4, c.body); }, c.line);   // 頭 + ほっぺ
+    if (c.stripe) p.rect(23, 7, 2, withFace ? 9 : 38, c.stripe);
+    if (c.spots) p.ellipse(32, 13, 4, 3, c.spots);
     if (!withFace) return;
-    faceFront(p, c, 24, 35, 22, f === 1 && !eat);
+    if (c.face) p.ellipse(24, 24, 10, 7, c.face);
+    if (c.brow) { p.ellipse(17, 15, 3, 2, c.brow); p.ellipse(31, 15, 3, 2, c.brow); }
+    p.ellipse(11, 25, 2.5, 1.5, BLUSH); p.ellipse(37, 25, 2.5, 1.5, BLUSH);
+    p.ellipse(24, 27, 5, 3, c.belly);                                                              // マズル
+    eye(p, c, 17, 19, f === 1 && !eat); eye(p, c, 31, 19, f === 1 && !eat);
+    nose(p, c, 23, 25); mouthW(p, c, 23, 27);
     if (eat) {
       const dy = f ? 1 : 0;
-      p.part((t) => { t.ellipse(19, 38 + dy, 3, 2, c.body); t.ellipse(29, 38 + dy, 3, 2, c.body); }, c.line);   // 手
-      p.part((t) => t.ellipse(24, 37 + dy, 2, 3, SEED), c.line);                                                  // たね
-    } else {
-      pad(p, c, 20, 42, 2.5, 1.5); pad(p, c, 28, 42, 2.5, 1.5);                                                 // 手（あごの下）
+      p.part((t) => { t.ellipse(19, 31 + dy, 3, 2, c.body); t.ellipse(29, 31 + dy, 3, 2, c.body); }, c.line);   // 手
+      p.part((t) => t.ellipse(24, 30 + dy, 2, 3, SEED), c.line);                                                  // たね
     }
   }
   const DRAW = {
-    front(p, c, f) { blobFront(p, c, true, f, false); },
-    eat(p, c, f) { blobFront(p, c, true, f, true); },
+    front(p, c, f) { bodyFront(p, c, true, f, false); },
+    eat(p, c, f) { bodyFront(p, c, true, f, true); },
     back(p, c, f, tail) {
-      blobFront(p, c, false, f, false);
-      if (f) { /* 片耳ぴく: 上に描き足す */ ear(p, c, 35, 16, 4); }
-      if (tail) p.part((t) => t.line(24, 41, 32, 46, c.body, 2), c.line); else pad(p, c, 24, 42, 2, 1.5);
+      bodyFront(p, c, false, f, false);
+      if (tail) p.part((t) => t.line(24, 43, 32, 47, c.body, 2), c.line); else pad(p, c, 24, 44, 2, 1.5);
     },
     // あるく（右向き）。f=1 で足を入れ替え
     side(p, c, f, tail) {
-      if (tail) p.part((t) => t.line(5, 33, 1, 40, c.body, 2), c.line); else pad(p, c, 4, 35, 2, 1.5);
-      const fx = f ? [11, 18, 27, 34] : [8, 20, 24, 36];
-      fx.forEach((x) => pad(p, c, x, 43, 3, 1.5));                                                         // 足
-      p.part((t) => { t.ellipse(21, 31, 19, 11, c.body); t.ellipse(35, 29, 10, 9.5, c.body); t.ellipse(41, 34, 4, 3, c.body); }, c.line);   // 体 + 頭 + ほっぺ
-      if (c.face) p.ellipse(39, 32, 6, 5, c.face);
-      if (c.stripe) p.line(5, 27, 33, 21, c.stripe, 2);
-      if (c.spots) { p.ellipse(13, 31, 4, 3, c.spots); p.ellipse(28, 23, 3, 3, c.spots); }
-      ear(p, c, 33, 19, 4);
-      p.ellipse(41, 35, 4, 2.5, c.belly);                                                                   // マズル
-      if (c.brow) p.ellipse(38, 26, 3, 2, c.brow);
-      p.rect(38, 27, 1, 3, c.eye);
-      p.rect(44, 33, 2, 1, c.nose);
-      p.put(43, 35, c.line); p.put(42, 36, c.line);                                                         // 口
-      p.rect(45, 32, 3, 1, c.line); p.rect(45, 36, 3, 1, c.line);                                           // ヒゲ
+      if (tail) p.part((t) => t.line(6, 36, 1, 43, c.body, 2), c.line); else pad(p, c, 5, 37, 2, 1.5);
+      const fx = f ? [12, 19, 27, 34] : [9, 21, 25, 37];
+      fx.forEach((x) => pad(p, c, x, 44, 3, 1.5));                                                  // 足
+      p.part((t) => t.ellipse(20, 35, 15, 9, c.body), c.line);                                      // 体
+      if (c.stripe) p.line(6, 30, 26, 27, c.stripe, 2);
+      if (c.spots) p.ellipse(13, 34, 4, 3, c.spots);
+      p.ellipse(19, 40, 9, 3.5, c.belly);
+      ear(p, c, 30, 13, 4);
+      p.part((t) => { t.ellipse(33, 24, 11, 10, c.body); t.ellipse(38, 29, 4, 3.5, c.body); }, c.line);   // 頭 + ほっぺ
+      if (c.face) p.ellipse(38, 27, 5, 5, c.face);
+      if (c.stripe) p.rect(30, 14, 2, 6, c.stripe);
+      if (c.spots) p.ellipse(28, 19, 3, 3, c.spots);
+      if (c.brow) p.ellipse(37, 18, 3, 2, c.brow);
+      p.ellipse(38, 30, 2.5, 1.5, BLUSH);
+      p.ellipse(41, 28, 3, 2.5, c.belly);                                                          // マズル
+      eye(p, c, 37, 22, false);
+      nose(p, c, 42, 27); p.put(41, 29, mouthColor(c)); p.put(40, 30, mouthColor(c));
     },
-    // ねる（丸まって左向き）。f=1 で zzz が浮く
+    // ねる（左向きに横になる）。f=1 で zzz が浮く
     sleep(p, c, f, tail) {
-      zzz(p, c, 34, f ? 12 : 14);
-      if (tail) p.part((t) => t.line(41, 40, 47, 35, c.body, 2), c.line); else pad(p, c, 43, 39, 2, 1.5);
-      p.part((t) => { t.ellipse(26, 33, 19, 12, c.body); t.ellipse(11, 35, 9, 8, c.body); t.ellipse(5, 38, 4, 3, c.body); }, c.line);
-      if (c.stripe) p.line(14, 25, 42, 30, c.stripe, 2);
-      if (c.spots) p.ellipse(33, 30, 4, 3, c.spots);
-      ear(p, c, 8, 27, 3.5);
-      p.ellipse(6, 39, 4, 2.5, c.belly);
-      if (c.brow) p.ellipse(12, 32, 3, 2, c.brow);
-      p.rect(11, 34, 3, 1, c.eye);                                                                          // 閉じた目
-      p.rect(2, 37, 2, 1, c.nose);
+      zzz(p, c, 35, f ? 12 : 14);
+      if (tail) p.part((t) => t.line(42, 41, 47, 36, c.body, 2), c.line); else pad(p, c, 44, 40, 2, 1.5);
+      p.part((t) => t.ellipse(26, 35, 18, 9, c.body), c.line);                                      // 体
+      if (c.stripe) p.line(14, 28, 42, 30, c.stripe, 2);
+      if (c.spots) p.ellipse(34, 32, 4, 3, c.spots);
+      p.ellipse(28, 40, 12, 3.5, c.belly);
+      ear(p, c, 8, 26, 4);
+      p.part((t) => { t.ellipse(12, 34, 10, 9, c.body); t.ellipse(5, 38, 4, 3, c.body); }, c.line);   // 頭（左）
+      if (c.face) p.ellipse(9, 36, 6, 5, c.face);
+      if (c.brow) p.ellipse(11, 29, 3, 2, c.brow);
+      p.ellipse(5, 38, 2.5, 1.5, BLUSH);
+      p.ellipse(4, 39, 3, 2, c.belly);
+      happyEye(p, c, 12, 32);
+      nose(p, c, 2, 37);
     },
-    // ごろん（あおむけ・上から）。f=1 で手足がばたばた
+    // ごろん（あおむけ）。f=1 で手足がばたばた
     belly(p, c, f, tail) {
       const d = f ? 1 : 0;
-      if (tail) p.part((t) => t.line(43, 30, 47, 25, c.body, 2), c.line); else pad(p, c, 44, 30, 2, 1.5);
-      pad(p, c, 18, 19 - d, 3, 2); pad(p, c, 31, 18 + d, 3, 2); pad(p, c, 18, 42 + d, 3, 2); pad(p, c, 31, 43 - d, 3, 2);   // 手足
-      p.part((t) => { t.ellipse(26, 30, 18, 11, c.body); t.ellipse(9, 30, 8.5, 8, c.body); }, c.line);      // 体 + 頭
-      p.ellipse(27, 30, 12, 7, c.belly);                                                                    // おなか
-      if (c.spots) p.ellipse(38, 26, 3.5, 3, c.spots);
-      if (c.face) p.ellipse(9, 31, 6, 6, c.face);
-      ear(p, c, 5, 22, 3.5); ear(p, c, 5, 38, 3.5);
-      if (c.brow) { p.ellipse(8, 26, 2, 2.5, c.brow); p.ellipse(8, 34, 2, 2.5, c.brow); }
-      p.rect(9, 25, 3, 1, c.eye); p.rect(9, 34, 3, 1, c.eye);                                               // 目（横向きに見上げ）
-      p.ellipse(4, 30, 2.5, 4, c.belly);
-      p.rect(2, 29, 1, 2, c.nose);
-      p.put(3, 27, c.line); p.put(3, 32, c.line);                                                           // 口
-      p.rect(6, 19, 1, 3, c.line); p.rect(6, 38, 1, 3, c.line);                                             // ヒゲ
+      if (tail) p.part((t) => t.line(43, 32, 47, 27, c.body, 2), c.line); else pad(p, c, 44, 32, 2, 1.5);
+      pad(p, c, 19, 20 - d, 3, 2); pad(p, c, 31, 19 + d, 3, 2); pad(p, c, 19, 44 + d, 3, 2); pad(p, c, 31, 45 - d, 3, 2);   // 手足
+      p.part((t) => t.ellipse(27, 32, 17, 10, c.body), c.line);                                     // 体
+      p.ellipse(28, 32, 12, 7, c.belly);                                                            // おなか
+      if (c.spots) p.ellipse(39, 27, 3.5, 3, c.spots);
+      ear(p, c, 4, 21, 4); ear(p, c, 15, 20, 4);
+      p.part((t) => { t.ellipse(10, 30, 10, 9, c.body); t.ellipse(3, 34, 4, 3.5, c.body); t.ellipse(17, 35, 4, 3.5, c.body); }, c.line);   // 頭（左・こちら向き）
+      if (c.face) p.ellipse(10, 33, 7, 5.5, c.face);
+      if (c.brow) { p.ellipse(6, 26, 2.5, 2, c.brow); p.ellipse(14, 26, 2.5, 2, c.brow); }
+      p.ellipse(3, 34, 2, 1.5, BLUSH); p.ellipse(17, 35, 2, 1.5, BLUSH);
+      p.ellipse(10, 35, 4, 2.5, c.belly);
+      eye(p, c, 6, 29, false); eye(p, c, 14, 29, false);
+      nose(p, c, 9, 33); mouthW(p, c, 9, 35);
     },
   };
   const POSES = {
@@ -216,12 +220,12 @@
 
   // アクセサリーの置き場所（48 グリッド）: head=頭のてっぺん, brow=おでこ, chin=あご
   const HEAD = {
-    front: { head: [24, 15], brow: [24, 27], chin: [24, 40] },
-    eat:   { head: [24, 15], brow: [24, 27], chin: [24, 40] },
-    back:  { head: [24, 15], brow: [24, 24], chin: null },
-    side:  { head: [34, 20], brow: [39, 25], chin: [42, 39] },
-    sleep: { head: [11, 27], brow: [12, 32], chin: [7, 43] },
-    belly: { head: [9, 22],  brow: [11, 30], chin: [4, 36] },
+    front: { head: [24, 7],  brow: [24, 14], chin: [24, 31] },
+    eat:   { head: [24, 7],  brow: [24, 14], chin: [24, 31] },
+    back:  { head: [24, 7],  brow: [24, 14], chin: null },
+    side:  { head: [33, 14], brow: [37, 19], chin: [41, 33] },
+    sleep: { head: [12, 25], brow: [11, 30], chin: [6, 42] },
+    belly: { head: [10, 21], brow: [10, 26], chin: [8, 38] },
   };
   const ACC_PAL = { y: '#f2c14e', Y: '#d9a012', r: '#c9302c', W: '#ffffff', b: '#7fb0c9', L: '#4a3324' };
   // parts: at=置き場所, rows=スプライト（2 倍に拡大して置く）, dy=上下ずらし（head/brow は下端基準、chin は上端基準）
@@ -237,6 +241,8 @@
   function resolveColors(opts) {
     const c = Object.assign({}, DEF, opts.silhouette ? SIL : (opts.colors || {}));
     ['stripe', 'brow', 'spots', 'face'].forEach((k) => { if (c[k] === 'none' || opts.silhouette) c[k] = null; });
+    const n = parseInt(c.body.slice(1), 16);
+    c.dark = (((n >> 16) & 255) * 0.3 + ((n >> 8) & 255) * 0.59 + (n & 255) * 0.11) < 90;   // 暗い体色（口を明るく描く）
     return c;
   }
 
