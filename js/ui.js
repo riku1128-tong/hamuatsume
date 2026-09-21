@@ -121,13 +121,13 @@
         const bi = D.BOWLS.findIndex((b) => b.id === v.slot);
         if (bi >= 0) {
           const b = D.BOWLS[bi];
-          x = b.x + b.anchor.x * A.PX; y = b.y + b.anchor.y * A.PX; if (b.flip) flip = true;
+          x = b.x + b.anchor.x * A.ANCHOR_PX; y = b.y + b.anchor.y * A.ANCHOR_PX; if (b.flip) flip = true;
         } else {
           const sl = D.SLOTS.find((q) => q.id === v.slot); const item = sl && D.itemById[s.slots[v.slot]]; if (!sl || !item) return '';
           const anchor = (v.seat === 1 && item.anchor2) || item.anchor;
           // グッズはスロット内で下寄せ・中央
           const ix = sl.x + (sl.w - A.ITEM_W * A.PX) / 2, iy = sl.y + sl.h - A.ITEM_H * A.PX;
-          x = ix + anchor.x * A.PX; y = iy + anchor.y * A.PX;
+          x = ix + anchor.x * A.ANCHOR_PX; y = iy + anchor.y * A.ANCHOR_PX;
         }
         const isNew = s.album[h.id] && s.album[h.id].visits === 1;
         return `<div class="visitor ${isNew ? 'new' : ''}" style="left:${x}px;top:${y}px" data-ham="${h.id}">${A.hamster({ colors: h.colors, pose: v.pose, flip, size, accessory: h.accessory, tail: h.colors.tail, className: 'hamu bob', anim: true })}<div class="name">${esc(hamName(s, h))}</div></div>`;
